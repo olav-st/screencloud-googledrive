@@ -1,0 +1,7 @@
+<metadata>
+	<name>Google Drive</name>
+	<shortname>googledrive</shortname>
+	<className>GoogleDriveUploader</className>
+	<icon>icon.png</icon>
+	<version>1.0</version>
+</metadata>
