@@ -1,7 +1,7 @@
 SOURCES += modules/google
 SOURCES += modules/googleapiclient
 SOURCES += modules/google_auth_httplib2.py
-SOURCES += modules/httplib2.py
+SOURCES += modules/httplib2
 SOURCES += modules/httplib2_python3
 SOURCES += modules/httplib2_python2
 SOURCES += modules/oauth2client
