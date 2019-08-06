@@ -138,7 +138,7 @@
       <item>
        <widget class="QRadioButton" name="radio_dontcopy">
         <property name="text">
-         <string>Dont copy link</string>
+         <string>Don't copy link</string>
         </property>
        </widget>
       </item>
