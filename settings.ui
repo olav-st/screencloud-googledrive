@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dropbox</class>
- <widget class="QDialog" name="Dropbox">
+ <class>GoogleDrive</class>
+ <widget class="QDialog" name="GoogleDrive">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dropbox - Settings</string>
+   <string>Google Drive - Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -183,7 +183,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dropbox</receiver>
+   <receiver>GoogleDrive</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -199,7 +199,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dropbox</receiver>
+   <receiver>GoogleDrive</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
