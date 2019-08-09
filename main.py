@@ -7,7 +7,7 @@ if not hasattr(sys, 'argv'):
 
 import ScreenCloud
 from PythonQt.QtCore import QFile, QSettings, QUrl, QByteArray, QBuffer, QIODevice
-from PythonQt.QtGui import QDesktopServices
+from PythonQt.QtGui import QDesktopServices, QMessageBox
 from PythonQt.QtUiTools import QUiLoader
 import time, string, sys
 from httplib2 import Http
