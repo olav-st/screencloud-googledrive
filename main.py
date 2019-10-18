@@ -21,15 +21,19 @@ else:
     import StringIO
     BytesIO = StringIO.StringIO
 
-
 SCOPES = 'https://www.googleapis.com/auth/drive.file'
 
 class GoogleDriveUploader():
     def __init__(self):
         self.uil = QUiLoader()
         self.loadSettings()
-        if self.accessToken:
-            credentials = client.AccessTokenCredentials(self.accessToken, 'my-user-agent/1.0')
+        self.clientID, self.clientSecret = '417133363442-dtm48svvid8ntj6locavdvdt3e982n6k.apps.googleusercontent.com', 'UmzBQInps-09e6VNbnsRT0BG'
+        if self.accessToken and self.refreshToken:
+            credentials = client.GoogleCredentials(
+                self.accessToken, self.clientID, self.clientSecret, 
+                self.refreshToken, None, "https://accounts.google.com/o/oauth2/token",
+                'ScreenCloudGoogleDrivePlugin/1.3'
+            )
             self.driveService = build('drive', 'v3', http=credentials.authorize(Http()))
 
     def showSettingsUI(self, parentWidget):
@@ -45,7 +49,7 @@ class GoogleDriveUploader():
 
     def updateUi(self):
         self.loadSettings()
-        if not self.accessToken:
+        if not self.accessToken or not self.refreshToken:
             self.settingsDialog.group_account.widget_loggedIn.setVisible(False)
             self.settingsDialog.group_account.widget_authorize.setVisible(True)
             self.settingsDialog.group_account.widget_authorize.button_authenticate.setEnabled(True)
@@ -71,8 +75,7 @@ class GoogleDriveUploader():
         settings.beginGroup("uploaders")
         settings.beginGroup("googledrive")
         self.accessToken = settings.value("access-token", "")
-        self.clientID = settings.value("clientID", "")
-        self.clientSecret = settings.value("clientSecret", "")
+        self.refreshToken = settings.value("refresh-token", "")
         self.displayName = settings.value("display-name", "")
         self.copyLink = settings.value("copy-link", "true") in ['true', True]
         self.nameFormat = settings.value("name-format", "Screenshot at %H-%M-%S")
@@ -85,6 +88,7 @@ class GoogleDriveUploader():
         settings.beginGroup("uploaders")
         settings.beginGroup("googledrive")
         settings.setValue("access-token", self.accessToken)
+        settings.setValue("refresh-token", self.refreshToken)
         settings.setValue("display-name", self.displayName)
         settings.setValue("copy-link", self.settingsDialog.group_clipboard.radio_publiclink.checked)
         settings.setValue("name-format", self.settingsDialog.group_name.input_nameFormat.text)
@@ -94,7 +98,7 @@ class GoogleDriveUploader():
 
     def isConfigured(self):
         self.loadSettings()
-        if not self.accessToken:
+        if not self.accessToken or not self.refreshToken:
             return False
         return True
 
@@ -139,8 +143,8 @@ class GoogleDriveUploader():
 
     def startAuthenticationProcess(self):
         self.settingsDialog.group_account.widget_authorize.button_authenticate.setEnabled(False)
-        self.flow = client.OAuth2WebServerFlow(client_id = '417133363442-dtm48svvid8ntj6locavdvdt3e982n6k.apps.googleusercontent.com',
-                           client_secret = 'UmzBQInps-09e6VNbnsRT0BG',
+        self.flow = client.OAuth2WebServerFlow(client_id = self.clientID,
+                           client_secret = self.clientSecret,
                            scope = SCOPES,
                            redirect_uri = "urn:ietf:wg:oauth:2.0:oob")
         authorize_url = QUrl(self.flow.step1_get_authorize_url())
@@ -153,6 +157,7 @@ class GoogleDriveUploader():
             try:
                 oauth2_result = self.flow.step2_exchange(code)
                 self.accessToken = oauth2_result.access_token
+                self.refreshToken = oauth2_result.refresh_token
                 self.driveService = build('drive', 'v3', http=oauth2_result.authorize(Http()))
                 account = self.driveService.about().get(fields="user").execute()
                 self.displayName = account["user"]["displayName"]
@@ -172,6 +177,7 @@ class GoogleDriveUploader():
         settings.beginGroup("uploaders")
         settings.beginGroup("googledrive")
         settings.remove("access-token")
+        settings.remove("refresh-token")
         settings.remove("user-id")
         settings.remove("display-name")
         settings.endGroup()
