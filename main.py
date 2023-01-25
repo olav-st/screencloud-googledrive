@@ -11,9 +11,11 @@ from PythonQt.QtGui import QDesktopServices, QMessageBox
 from PythonQt.QtUiTools import QUiLoader
 import time, string, sys
 from httplib2 import Http
-from oauth2client import client, tools
+from oauth2client import client
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaInMemoryUpload
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google_auth_oauthlib.interactive import find_open_port
 if sys.version_info[0] >= 3:
     import io
     BytesIO = io.BytesIO
@@ -143,32 +145,31 @@ class GoogleDriveUploader():
 
     def startAuthenticationProcess(self):
         self.settingsDialog.group_account.widget_authorize.button_authenticate.setEnabled(False)
-        self.flow = client.OAuth2WebServerFlow(client_id = self.clientID,
-                           client_secret = self.clientSecret,
-                           scope = SCOPES,
-                           redirect_uri = "urn:ietf:wg:oauth:2.0:oob")
-        authorize_url = QUrl(self.flow.step1_get_authorize_url())
-        QDesktopServices.openUrl(authorize_url)
-        try:
-            code = raw_input("Enter the authorization code from the Google Drive website:")
-        except NameError:
-            code = input("Enter the authorization code from the Google Drive website:")
-        if code:
-            try:
-                oauth2_result = self.flow.step2_exchange(code)
-                self.accessToken = oauth2_result.access_token
-                self.refreshToken = oauth2_result.refresh_token
-                self.driveService = build('drive', 'v3', http=oauth2_result.authorize(Http()))
-                account = self.driveService.about().get(fields="user").execute()
-                self.displayName = account["user"]["displayName"]
-            except client.Error:
-                if "win" in sys.platform: #Workaround for crash on windows
-                    self.parentWidget.hide()
-                    self.settingsDialog.hide()
-                QMessageBox.critical(self.settingsDialog, "Failed to authenticate", "Failed to authenticate with Google Drive. Wrong code?")
-                if "win" in sys.platform:
-                    self.settingsDialog.show()
-                    self.parentWidget.show()
+        client_config = {
+            "installed": {
+                "client_id": self.clientID,
+                "client_secret": self.clientSecret,
+                "redirect_uris": ["http://localhost"],
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            }
+        }
+
+        app_flow = InstalledAppFlow.from_client_config(
+            client_config, scopes=SCOPES
+        )
+
+        port = find_open_port(start=8080)
+        if not port:
+            raise ConnectionError("Could not find open port.")
+
+        credentials = app_flow.run_local_server(host="localhost", port=port)
+        self.accessToken = credentials.token
+        self.refreshToken = credentials.refresh_token
+
+        self.driveService = build('drive', 'v3', credentials = credentials)
+        account = self.driveService.about().get(fields="user").execute()
+        self.displayName = account["user"]["displayName"]
         self.saveSettings()
         self.updateUi()
 

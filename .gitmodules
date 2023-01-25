@@ -19,3 +19,39 @@
 [submodule "deps/httplib2"]
 	path = deps/httplib2
 	url = https://github.com/httplib2/httplib2.git
+[submodule "deps/google-auth-library-python-oauthlib"]
+	path = deps/google-auth-library-python-oauthlib
+	url = https://github.com/googleapis/google-auth-library-python-oauthlib
+[submodule "deps/cachetools"]
+	path = deps/cachetools
+	url = https://github.com/tkem/cachetools/
+[submodule "deps/pyasn1"]
+	path = deps/pyasn1
+	url = https://github.com/etingof/pyasn1
+[submodule "deps/pyasn1-modules"]
+	path = deps/pyasn1-modules
+	url = https://github.com/etingof/pyasn1-modules
+[submodule "deps/python-rsa"]
+	path = deps/python-rsa
+	url = https://github.com/sybrenstuvel/python-rsa
+[submodule "deps/requests-oauthlib"]
+	path = deps/requests-oauthlib
+	url = https://github.com/requests/requests-oauthlib
+[submodule "deps/oauthlib"]
+	path = deps/oauthlib
+	url = https://github.com/oauthlib/oauthlib
+[submodule "deps/requests"]
+	path = deps/requests
+	url = https://github.com/psf/requests
+[submodule "deps/urllib3"]
+	path = deps/urllib3
+	url = https://github.com/urllib3/urllib3
+[submodule "deps/chardet"]
+	path = deps/chardet
+	url = https://github.com/chardet/chardet
+[submodule "deps/python-certifi"]
+	path = deps/python-certifi
+	url = https://github.com/certifi/python-certifi
+[submodule "deps/idna"]
+	path = deps/idna
+	url = https://github.com/kjd/idna
